@@ -1,986 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hostel Room Maintenance Portal</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            transition: background-color 0.3s ease;
-        }
-
-        body.dark-mode {
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-        }
-
-        .container {
-            display: flex;
-            height: 100vh;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            transition: all 0.3s ease;
-            overflow-y: auto;
-            position: fixed;
-            height: 100vh;
-            left: 0;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .sidebar.closed {
-            width: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .sidebar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .toggle-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .sidebar nav ul {
-            list-style: none;
-        }
-
-        .sidebar nav ul li {
-            margin: 15px 0;
-        }
-
-        .sidebar nav ul li a {
-            color: white;
-            text-decoration: none;
-            display: block;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .sidebar nav ul li a:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .sidebar nav ul li a.active {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 250px;
-            padding: 30px;
-            overflow-y: auto;
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-content.expanded {
-            margin-left: 0;
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        body.dark-mode .header {
-            background: #2a2a2a;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .header h1 {
-            font-size: 28px;
-            color: #333;
-        }
-
-        body.dark-mode .header h1 {
-            color: #e0e0e0;
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .theme-toggle {
-            background: #667eea;
-            border: none;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-
-        .theme-toggle:hover {
-            background: #764ba2;
-        }
-
-        /* Search Section */
-        .search-section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        body.dark-mode .search-section {
-            background: #2a2a2a;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .search-section h2 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        body.dark-mode .search-section h2 {
-            color: #e0e0e0;
-        }
-
-        .search-controls {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .search-controls input,
-        .search-controls select {
-            padding: 10px 15px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        body.dark-mode .search-controls input,
-        body.dark-mode .search-controls select {
-            background: #333;
-            border-color: #555;
-            color: #e0e0e0;
-        }
-
-        .search-controls input:focus,
-        .search-controls select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-            font-weight: 600;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-            border: 2px solid #ddd;
-        }
-
-        body.dark-mode .btn-secondary {
-            background: #333;
-            color: #e0e0e0;
-            border-color: #555;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .btn-success {
-            background: #4caf50;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #45a049;
-        }
-
-        .btn-danger {
-            background: #f44336;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #da190b;
-        }
-
-        .btn-warning {
-            background: #ff9800;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #e68900;
-        }
-
-        /* Table Section */
-        .table-section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-
-        body.dark-mode .table-section {
-            background: #2a2a2a;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .table-section h2 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        body.dark-mode .table-section h2 {
-            color: #e0e0e0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table thead {
-            background: #f9f9f9;
-        }
-
-        body.dark-mode table thead {
-            background: #333;
-        }
-
-        table thead th {
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            color: #333;
-            border-bottom: 2px solid #ddd;
-        }
-
-        body.dark-mode table thead th {
-            color: #e0e0e0;
-            border-bottom-color: #555;
-        }
-
-        table tbody td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            color: #333;
-        }
-
-        body.dark-mode table tbody td {
-            border-bottom-color: #555;
-            color: #e0e0e0;
-        }
-
-        table tbody tr:hover {
-            background: #f5f5f5;
-        }
-
-        body.dark-mode table tbody tr:hover {
-            background: #333;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-in-progress {
-            background: #cfe2ff;
-            color: #084298;
-        }
-
-        .status-completed {
-            background: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 12px;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.3s;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        body.dark-mode .modal-content {
-            background: #2a2a2a;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            color: #333;
-        }
-
-        body.dark-mode .modal-header h2 {
-            color: #e0e0e0;
-        }
-
-        .close {
-            font-size: 28px;
-            font-weight: bold;
-            color: #aaa;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .close:hover {
-            color: #000;
-        }
-
-        body.dark-mode .close:hover {
-            color: #e0e0e0;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        body.dark-mode .form-group label {
-            color: #e0e0e0;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            font-family: inherit;
-        }
-
-        body.dark-mode .form-group input,
-        body.dark-mode .form-group textarea,
-        body.dark-mode .form-group select {
-            background: #333;
-            border-color: #555;
-            color: #e0e0e0;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        body.dark-mode .success-message {
-            background: #1e4620;
-            color: #72e09a;
-        }
-
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        body.dark-mode .error-message {
-            background: #4a1a1a;
-            color: #e87878;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .stat-card {
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            color: white;
-        }
-
-        .stat-pending {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .stat-progress {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-
-        .stat-completed {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            font-size: 16px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-
-        body.dark-mode .empty-state {
-            color: #777;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-
-            .main-content {
-                margin-left: 200px;
-                padding: 15px;
-            }
-
-            .header {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
-
-            .search-controls {
-                flex-direction: column;
-            }
-
-            .search-controls input,
-            .search-controls select,
-            .btn {
-                width: 100%;
-            }
-
-            table {
-                font-size: 12px;
-            }
-
-            table thead th,
-            table tbody td {
-                padding: 8px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn-sm {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .sidebar {
-                width: 0;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 10px;
-            }
-
-            .modal-content {
-                width: 95%;
-                margin: 20% auto;
-                padding: 20px;
-            }
-
-            .header h1 {
-                font-size: 20px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>🏠 Hostel Room Maintenance Request</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f9f4;
+        padding: 20px;
+    }
+    h2 {
+        text-align: center;
+    }
+    .form-container {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        grid-gap: 12px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #ccc;
+    }
+    input, select, textarea {
+        padding: 8px;
+        width: 100%;
+        border-radius: 6px;
+        border: 1px solid #999;
+    }
+    textarea {
+        resize: none;
+        height: 70px;
+    }
+    button {
+        grid-column: 2 / 3;
+        background-color: #2E8B57;
+        color: white;
+        padding: 10px;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 25px;
+        background: white;
+    }
+    th, td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+    th {
+        background-color: #e0f0e0;
+    }
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">🏢 Hostel Maintenance</div>
-                <button class="toggle-btn" id="toggleBtn">☰</button>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#" class="active" onclick="showSection('dashboard')">📊 Dashboard</a></li>
-                    <li><a href="#" onclick="showSection('search')">🔍 Search Requests</a></li>
-                    <li><a href="#" onclick="showSection('add')">➕ Add Request</a></li>
-                    <li><a href="#" onclick="showSection('reports')">📄 Download Data</a></li>
-                    <li><a href="#" onclick="showSection('settings')">⚙️ Settings</a></li>
-                </ul>
-            </nav>
-        </div>
 
-        <!-- Main Content -->
-        <div class="main-content" id="mainContent">
-            <!-- Header -->
-            <div class="header">
-                <h1>Hostel Room Maintenance Portal</h1>
-                <div class="header-controls">
-                    <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
-                </div>
-            </div>
+<h2>🏠 Hostel Room Maintenance Request</h2>
 
-            <!-- Dashboard Section -->
-            <div id="dashboard" class="section">
-                <div class="search-section">
-                    <h2>📊 Quick Overview</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card stat-pending">
-                            <div class="stat-value" id="pendingCount">0</div>
-                            <div class="stat-label">Pending Requests</div>
-                        </div>
-                        <div class="stat-card stat-progress">
-                            <div class="stat-value" id="progressCount">0</div>
-                            <div class="stat-label">In Progress</div>
-                        </div>
-                        <div class="stat-card stat-completed">
-                            <div class="stat-value" id="completedCount">0</div>
-                            <div class="stat-label">Completed</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="form-container">
+    <label>Student Name:</label>
+    <input type="text" id="name" placeholder="Enter your name">
 
-            <!-- Search Section -->
-            <div id="search" class="section" style="display: none;">
-                <div class="search-section">
-                    <h2>🔍 Search Maintenance Requests</h2>
-                    <div class="search-controls">
-                        <input type="text" id="searchKeyword" placeholder="Search by Room No., Resident Name...">
-                        <select id="searchStatus">
-                            <option value="">All Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
-                        </select>
-                        <button class="btn btn-primary" onclick="performSearch()">Search</button>
-                        <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
-                    </div>
-                </div>
+    <label>Room Number:</label>
+    <input type="text" id="room" placeholder="Enter room number">
 
-                <div class="table-section">
-                    <h2>Search Results</h2>
-                    <table id="searchTable">
-                        <thead>
-                            <tr>
-                                <th>Room No.</th>
-                                <th>Resident Name</th>
-                                <th>Issue Type</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Date Submitted</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="searchTableBody">
-                            <tr>
-                                <td colspan="7" class="empty-state">No requests found. Try searching or adding a new request.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <label>Issue Type:</label>
+    <select id="issue">
+        <option value="">Select issue</option>
+        <option>Plumbing</option>
+        <option>Electricity</option>
+        <option>Cleaning</option>
+        <option>Furniture</option>
+        <option>Other</option>
+    </select>
 
-            <!-- Add Request Section -->
-            <div id="add" class="section" style="display: none;">
-                <div class="search-section">
-                    <div class="success-message" id="successMessage">✅ Request submitted successfully!</div>
-                    <div class="error-message" id="errorMessage">❌ Error! Please check your input.</div>
-                    
-                    <h2>➕ Add New Maintenance Request</h2>
-                    <div style="margin-top: 20px;">
-                        <div class="form-group">
-                            <label>Room Number *</label>
-                            <input type="text" id="roomNo" placeholder="e.g., 101, 205">
-                        </div>
-                        <div class="form-group">
-                            <label>Resident Name *</label>
-                            <input type="text" id="residentName" placeholder="Full name of resident">
-                        </div>
-                        <div class="form-group">
-                            <label>Contact Number *</label>
-                            <input type="tel" id="contactNumber" placeholder="10-digit mobile number">
-                        </div>
-                        <div class="form-group">
-                            <label>Issue Type *</label>
-                            <select id="issueType">
-                                <option value="">Select Issue Type</option>
-                                <option value="Broken Window">Broken Window</option>
-                                <option value="Leaky Tap">Leaky Tap</option>
-                                <option value="Electrical Issue">Electrical Issue</option>
-                                <option value="Damaged Door">Damaged Door</option>
-                                <option value="Wall Damage">Wall Damage</option>
-                                <option value="AC/Cooling Issue">AC/Cooling Issue</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Priority Level *</label>
-                            <select id="priorityLevel">
-                                <option value="">Select Priority</option>
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                                <option value="Urgent">Urgent</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Description *</label>
-                            <textarea id="description" placeholder="Detailed description of the issue..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Status *</label>
-                            <select id="status">
-                                <option value="Pending">Pending</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Completed">Completed</option>
-                            </select>
-                        </div>
-                        <div class="form-actions">
-                            <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
-                            <button class="btn btn-success" onclick="submitForm()">Submit Request</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <label>Description:</label>
+    <textarea id="desc" placeholder="Describe the problem..."></textarea>
 
-            <!-- Download Data Section -->
-            <div id="reports" class="section" style="display: none;">
-                <div class="search-section">
-                    <h2>📄 Download Data</h2>
-                    <div style="margin-top: 20px;">
-                        <p style="color: #555; margin-bottom: 15px;">Export all maintenance request data in JSON format</p>
-                        <div class="form-group">
-                            <label>Select Export Type:</label>
-                            <select id="reportType">
-                                <option value="all">All Requests</option>
-                                <option value="pending">Pending Requests Only</option>
-                                <option value="inProgress">In Progress Only</option>
-                                <option value="completed">Completed Only</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-primary" onclick="downloadReport()">📥 Download as JSON</button>
-                        <button class="btn btn-primary" onclick="printReport()" style="margin-top: 10px;">🖨️ Print Report</button>
-                    </div>
-                </div>
-            </div>
+    <button onclick="submitRequest()">Submit Request</button>
+</div>
 
-            <!-- Settings Section -->
-            <div id="settings" class="section" style="display: none;">
-                <div class="search-section">
-                    <h2>⚙️ Settings & Preferences</h2>
-                    <div style="margin-top: 20px;">
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="autoRefresh" checked>
-                                Auto-refresh data every 5 seconds
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="soundNotifications" checked>
-                                Enable sound notifications
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="confirmDelete" checked>
-                                Confirm before deleting requests
-                            </label>
-                        </div>
-                        <button class="btn btn-success" onclick="saveSettings()">💾 Save Settings</button>
-                        <button class="btn btn-danger" onclick="clearAllData()" style="margin-top: 10px;">🗑️ Clear All Data</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<table id="requestTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Room</th>
+            <th>Issue</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 
-    <!-- Edit Modal -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Edit Request</h2>
-                <span class="close" onclick="closeModal('editModal')">&times;</span>
-            </div>
-            <div style="margin-bottom: 15px;">
-                <p><strong>Status:</strong></p>
-                <select id="editStatus">
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                </select>
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
-                <button class="btn btn-success" onclick="saveEdit()">Save Changes</button>
-            </div>
-        </div>
-    </div>
+<script>
+function submitRequest() {
+    let name = document.getElementById("name").value;
+    let room = document.getElementById("room").value;
+    let issue = document.getElementById("issue").value;
+    let desc = document.getElementById("desc").value;
 
-    <script>
-        // ==================== STORAGE MANAGEMENT ====================
-        const STORAGE_KEY = 'hostelMaintenanceData';
-        let allRequests = [];
-        let currentEditId = null;
-        let settings = {
-            autoRefresh: true,
-            soundNotifications: true,
-            confirmDelete: true
-        };
+    if (name === "" || room === "" || issue === "" || desc === "") {
+        alert("❌ Please fill all fields!");
+        return;
+    }
 
-        // Load data from localStorage
-        function loadData() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                allRequests = JSON.parse(stored);
-            } else {
-                allRequests = [
-                    {
-                        id: 1,
-                        roomNumber: '101',
-                        residentName: 'Raj Kumar',
-                        contactNumber: '9876543210',
-                        issueType: 'Broken Window',
-                        description: 'Window pane is cracked',
-                        priorityLevel: 'High',
-                        status: 'Pending',
-                        submittedDate: new Date().toISOString()
-                    },
-                    {
-                        id: 2,
-                        roomNumber: '205',
-                        residentName: 'Priya Singh',
-                        contactNumber: '9876543211',
-                        issueType: 'Leaky Tap',
-                        description: 'Water leaking from bathroom tap',
-                        priorityLevel: 'Medium',
-                        status: 'In Progress',
-                        submittedDate: new Date(Date.now() - 2*24*60*60*1000).toISOString()
-                    },
-                    {
-                        id: 3,
-                        roomNumber: '302',
-                        residentName: 'Ahmed Hassan',
-                        contactNumber: '9876543212',
-                        issueType: 'Electrical Issue',
-                        description: 'Light not working in room',
-                        priorityLevel: 'High',
-                        status: 'Completed',
-                        submittedDate: new Date(Date.now() - 5*24*60*60*1000).toISOString()
-                    }
-                ];
-                saveData();
-            }
-            loadSettings();
-        }
+    let table = document.getElementById("requestTable").querySelector("tbody");
+    let row = table.insertRow();
 
-        // Save data to localStorage
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(allRequests));
-            updateDashboard();
-        }
+    row.insertCell(0).textContent = name;
+    row.insertCell(1).textContent = room;
+    row.insertCell(2).textContent = issue;
+    row.insertCell(3).textContent = desc;
 
-        // Load settings from localStorage
-        function loadSettings() {
-            const stored = localStorage.getItem('hostelSettings');
-            if (stored) {
-                settings = JSON.parse(stored);
-                document.getElementById('autoRefresh').checked = settings.autoRefresh;
-                document.getElementById('soundNotifications').checked = settings.soundNotifications;
-                document.getElementById('confirmDelete').checked = settings.confirmDelete;
-            }
-        }
+    // Clear fields
+    document.getElementById("name").value = "";
+    document.getElementById("room").value = "";
+    document.getElementById("issue").value = "";
+    document.getElementById("desc").value = "";
 
-        // Save settings
-        function saveSettings() {
-            settings = {
-                autoRefresh: document.getElementById('autoRefresh').checked,
-                soundNotifications: document.getElementById('soundNotifications').checked,
-                confirmDelete: document.getElementById('confirmDelete').checked
-            };
-            localStorage.setItem('hostelSettings', JSON.stringify(settings));
-            alert('✅ Settings saved successfully!');
-        }
+    alert("✅ Request submitted successfully!");
+}
+</script>
 
-        // Clear all data
-        function clearAllData() {
-            if (confirm('⚠️ Are you sure you want to delete ALL data? This cannot be undone!')) {
-                allRequests = [];
-                saveData();
-                alert('✅ All data has been cleared.');
-                performSearch();
-            }
-        }
-
-        // ==================== UI FUNCTIONS ====================
-
-        // Theme Toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-        const toggleBtn = document.getElementById('toggleBtn');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            themeToggle.textContent = body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
-        });
-
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('closed');
-            mainContent.classList.toggle('expanded');
-        });
-
-        // Show Section
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
-            document.getElementByI
+</body>
+</html>
