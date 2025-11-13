@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🏠 Hostel Room Maintenance Request</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f9f4;
+        padding: 20px;
+    }
+    h2 {
+        text-align: center;
+    }
+    .form-container {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        grid-gap: 12px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #ccc;
+    }
+    input, select, textarea {
+        padding: 8px;
+        width: 100%;
+        border-radius: 6px;
+        border: 1px solid #999;
+    }
+    textarea {
+        resize: none;
+        height: 70px;
+    }
+    button {
+        grid-column: 2 / 3;
+        background-color: #2E8B57;
+        color: white;
+        padding: 10px;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 25px;
+        background: white;
+    }
+    th, td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+    th {
+        background-color: #e0f0e0;
+    }
+</style>
+</head>
+
+<body>
+
+<h2>🏠 Hostel Room Maintenance Request</h2>
+
+<div class="form-container">
+    <label>Student Name:</label>
+    <input type="text" id="name" placeholder="Enter your name">
+
+    <label>Room Number:</label>
+    <input type="text" id="room" placeholder="Enter room number">
+
+    <label>Issue Type:</label>
+    <select id="issue">
+        <option value="">Select issue</option>
+        <option>Plumbing</option>
+        <option>Electricity</option>
+        <option>Cleaning</option>
+        <option>Furniture</option>
+        <option>Other</option>
+    </select>
+
+    <label>Description:</label>
+    <textarea id="desc" placeholder="Describe the problem..."></textarea>
+
+    <button onclick="submitRequest()">Submit Request</button>
+</div>
+
+<table id="requestTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Room</th>
+            <th>Issue</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+function submitRequest() {
+    let name = document.getElementById("name").value;
+    let room = document.getElementById("room").value;
+    let issue = document.getElementById("issue").value;
+    let desc = document.getElementById("desc").value;
+
+    if (name === "" || room === "" || issue === "" || desc === "") {
+        alert("❌ Please fill all fields!");
+        return;
+    }
+
+    let table = document.getElementById("requestTable").querySelector("tbody");
+    let row = table.insertRow();
+
+    row.insertCell(0).textContent = name;
+    row.insertCell(1).textContent = room;
+    row.insertCell(2).textContent = issue;
+    row.insertCell(3).textContent = desc;
+
+    // Clear fields
+    document.getElementById("name").value = "";
+    document.getElementById("room").value = "";
+    document.getElementById("issue").value = "";
+    document.getElementById("desc").value = "";
+
+    alert("✅ Request submitted successfully!");
+}
+</script>
+
+</body>
+</html>
